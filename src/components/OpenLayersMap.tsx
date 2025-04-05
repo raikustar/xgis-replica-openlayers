@@ -9,22 +9,91 @@ import { Style, Stroke, Fill } from 'ol/style'
 import TileLayer from 'ol/layer/Tile'
 import { OSM } from 'ol/source'
 
-import { GeoJSONCollection } from '../templates/OpenLayersTypes'
+import { GeoJSONCollection} from '../templates/OpenLayersTypes'
+import { randomNumber } from '../utils/Randomizer'
 
 
 function OpenLayersMap() {
   // check if (div id="map") has changed, if so then rerender. currently adds additional div elements with the map tag.
   // manually remove previous map???????
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
-  
+
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_simple.geojson")
     .then(res => res.json())
     .then(json => {
+
       const regionData = json.features
       changeCountyCoordinates(regionData)
     })
   }, [])
+
+  const generateRandomColour = useCallback(() => {
+    const r = randomNumber()
+    const g = randomNumber()
+    const b = randomNumber()
+    return `rgb(${r},${g},${b},0.3)`
+  }, [])
+
+  const getVectorLayer = useCallback((data:GeoJSONCollection) => {
+    const vectorSource = new VectorSource({})
+    data.forEach((county) => {
+      const polygonCoordinateArray:number[] = []
+      const multiPolygonCoordinateArray:number[][][] = []
+
+      const geometryType = county?.geometry?.type
+      const coords = county?.geometry?.coordinates
+      if (geometryType === "Polygon") {
+        if (coords) {
+          coords.forEach((coord) => {
+            if (coord) {
+              polygonCoordinateArray.push(coord)
+            }
+          })
+        }
+        const feature = getPolygonLayer(polygonCoordinateArray, generateRandomColour())
+        vectorSource.addFeature(feature)
+      } else if (geometryType === "MultiPolygon") {
+        if (coords) {
+          coords.forEach(coord => 
+            coord.forEach(innerCoord => {
+              if (innerCoord) {
+                multiPolygonCoordinateArray.push(innerCoord)
+              }
+            } 
+            )
+          )
+        }  
+        const feature = getMultiPolygonLayer(multiPolygonCoordinateArray, generateRandomColour())
+        vectorSource.addFeature(feature)
+      }
+    })
+    
+    const vectorLayer = new VectorLayer({})
+    vectorLayer.setSource(vectorSource)
+    return vectorLayer
+  }, [generateRandomColour])
+
+  const loadOpenLayersMap = useCallback((data:GeoJSONCollection) => {
+    if (data.length === 0) return;
+
+      new Map({
+        target: 'map',
+        view: addViewToOLMap([25.0136, 58.5953], 8.5),
+        layers: [getTileLayerToOLMap(), getVectorLayer(data) ]
+      })
+    } ,[getVectorLayer])
+
+
+  useEffect(() => {
+    getCountyData()
+  },[getCountyData])
+
+  useEffect(() => {
+    if (regionFeatureCollection.length >= 1) {
+      loadOpenLayersMap(regionFeatureCollection)
+    }
+  }, [loadOpenLayersMap, regionFeatureCollection])
 
   function changeCountyCoordinates(data: GeoJSONCollection) {
     data.forEach((element) => {
@@ -47,27 +116,6 @@ function OpenLayersMap() {
     setRegionFeatureCollection(data)
   }
   
-  const loadOpenLayersMap = useCallback((data:GeoJSONCollection) => {
-    if (data.length === 0) return;
-
-      new Map({
-        target: 'map',
-        view: addViewToOLMap([25.0136, 58.5953], 6.8),
-        layers: [getTileLayerToOLMap(), firstShape(data) ]
-      })
-    } ,[])
-
-  useEffect(() => {
-      getCountyData()
-      
-  },[getCountyData])
-
-  useEffect(() => {
-    if (regionFeatureCollection.length >= 1) {
-      loadOpenLayersMap(regionFeatureCollection)
-    }
-  }, [loadOpenLayersMap, regionFeatureCollection])
-
   function addViewToOLMap(centerCoords:number[], zoomValue:number = 1) {
     const view = new View({
       center: fromLonLat(centerCoords),
@@ -85,7 +133,7 @@ function OpenLayersMap() {
   }
 
 
-  function getPolygonLayer(coordinates:number[], fillColour:string = "rgb(255,0,0, 0.2)", strokeColour:string = "red") {
+  function getPolygonLayer(coordinates:number[], fillColour:string = "rgb(255,0,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)") {
     const feature = new Feature({
       geometry: new Polygon(coordinates)
     })
@@ -96,8 +144,7 @@ function OpenLayersMap() {
     return feature
   }
 
-  function getMultiPolygonLayer(coordinates:number[][], fillColour:string = "rgb(0,255,0, 0.2)", strokeColour:string = "green") {
-
+  function getMultiPolygonLayer(coordinates:number[][][], fillColour:string = "rgb(0,255,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)") {
     const feature = new Feature({
       geometry: new MultiPolygon([coordinates])
     })
@@ -108,47 +155,7 @@ function OpenLayersMap() {
     return feature
   }
 
-
-
-
-  function firstShape(data:GeoJSONCollection) {
-    let i:number = 0
-    const vectorSource = new VectorSource({})
-    data.forEach((county) => {
-      i = i + 1
-      const polygonCoordinateArray:number[] = []
-      const multiPolygonCoordinateArray:number[][] = []
-      const geometryType = county?.geometry?.type
-      const coords = county?.geometry?.coordinates
-      if (geometryType === "Polygon") {
-        if (coords) {
-          coords.forEach((coord) => {
-            if (coord) {
-              polygonCoordinateArray.push(coord)
-            }
-          })
-        }
-        const feature = getPolygonLayer(polygonCoordinateArray)
-        vectorSource.addFeature(feature)
-      } else if (geometryType === "MultiPolygon") {
-        if (coords) {
-          coords.forEach(coord => 
-            coord.forEach(innerCoord => 
-              multiPolygonCoordinateArray.push(innerCoord)
-            )
-          )
-        }  
-        const feature = getMultiPolygonLayer(multiPolygonCoordinateArray)
-        vectorSource.addFeature(feature)
-      }
-      
-    })
-    
-    const vectorLayer = new VectorLayer({})
-    vectorLayer.setSource(vectorSource)
-    
-    return vectorLayer
-  }
+  
 
   
   return (
