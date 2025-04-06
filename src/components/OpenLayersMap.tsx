@@ -9,30 +9,37 @@ import { Style, Stroke, Fill } from 'ol/style'
 import TileLayer from 'ol/layer/Tile'
 import { OSM } from 'ol/source'
 
-import { GeoJSONCollection} from '../templates/OpenLayersTypes'
-import { randomNumber } from '../utils/Randomizer'
+import { GeoJSONCollection} from '../utils/OpenLayersTypes'
+import { getRandomNumber } from '../utils/Common'
 
 function OpenLayersMap() {
-
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
-  const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
 
+  const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_full.geojson")
     .then(res => res.json())
     .then(json => {
-
       const regionData = json.features
       setRegionFeatureCollection(regionData)
     })
   }, [])
 
   const generateRandomColour = useCallback(() => {
-    const r = randomNumber()
-    const g = randomNumber()
-    const b = randomNumber()
+    const r = getRandomNumber()
+    const g = getRandomNumber()
+    const b = getRandomNumber()
     return `rgb(${r},${g},${b},0.3)`
+  }, [])
+
+  const addViewToOLMap = useCallback((centerCoords:number[], zoomValue:number = 1) => {
+    const view = new View({
+      center: fromLonLat(centerCoords),
+      zoom: zoomValue,
+      minZoom: zoomValue,
+    });
+    return view
   }, [])
 
   const getVectorLayer = useCallback((data:GeoJSONCollection) => {
@@ -64,7 +71,7 @@ function OpenLayersMap() {
       view: addViewToOLMap([25.0136, 58.5953], 8.5),
       layers: [getTileLayerToOLMap(), getVectorLayer(data) ]
     })
-  } ,[getVectorLayer])
+  } ,[getVectorLayer, addViewToOLMap])
 
   useEffect(() => {
     getCountyData()
@@ -76,14 +83,7 @@ function OpenLayersMap() {
     }
   }, [loadOpenLayersMap, regionFeatureCollection])
   
-  function addViewToOLMap(centerCoords:number[], zoomValue:number = 1) {
-    const view = new View({
-      center: fromLonLat(centerCoords),
-      zoom: zoomValue,
-      minZoom: zoomValue
-    });
-    return view
-  }
+  
 
   function getTileLayerToOLMap() {
     const tileLayer = new TileLayer({
