@@ -11,12 +11,12 @@ type GeoJSONType = {
 
 type PolygonGeometry = {
   type: string,
-  coordinates: number[][][]
+  coordinates: number[][]
 }
 
 type MultiPolygonGeometry = {
   type: string,
-  coordinates: number[][][][]
+  coordinates: number[][][]
 }
 
 type Geometry = PolygonGeometry | MultiPolygonGeometry
