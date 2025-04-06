@@ -1,5 +1,5 @@
 
-import { useCallback, useEffect, useState} from 'react'
+import { useCallback, useEffect, useRef, useState} from 'react'
 import { Feature, Map, View } from "ol"
 import { fromLonLat } from 'ol/proj'
 import VectorLayer from 'ol/layer/Vector'
@@ -12,10 +12,11 @@ import { OSM } from 'ol/source'
 import { GeoJSONCollection} from '../templates/OpenLayersTypes'
 import { randomNumber } from '../utils/Randomizer'
 
-
 function OpenLayersMap() {
   // check if (div id="map") has changed, if so then rerender. currently adds additional div elements with the map tag.
   // manually remove previous map???????
+  const divRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<Map>(null)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
 
   const getCountyData = useCallback(() => {
@@ -75,14 +76,14 @@ function OpenLayersMap() {
   }, [generateRandomColour])
 
   const loadOpenLayersMap = useCallback((data:GeoJSONCollection) => {
-    if (data.length === 0) return;
+    if (!divRef.current || mapRef.current || data.length === 0) return;
 
-      new Map({
-        target: 'map',
-        view: addViewToOLMap([25.0136, 58.5953], 8.5),
-        layers: [getTileLayerToOLMap(), getVectorLayer(data) ]
-      })
-    } ,[getVectorLayer])
+    mapRef.current = new Map({
+      target: divRef.current,
+      view: addViewToOLMap([25.0136, 58.5953], 8.5),
+      layers: [getTileLayerToOLMap(), getVectorLayer(data) ]
+    })
+  } ,[getVectorLayer])
 
 
   useEffect(() => {
@@ -159,8 +160,8 @@ function OpenLayersMap() {
 
   
   return (
-    <div>
-        <div id='map' className='ol-map'></div>
+    <div id="map_parent">
+      <div ref={divRef} className="ol-map"></div>
     </div>
 
   )
