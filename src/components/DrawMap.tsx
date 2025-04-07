@@ -1,26 +1,35 @@
-
 import { useCallback, useEffect, useRef, useState} from 'react'
 import { Map, View } from "ol"
 import { fromLonLat } from 'ol/proj'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
-
-
 import { GeoJSONCollection} from '../utils/LayersTypes'
 import { getRandomNumber } from '../utils/Common'
 import { getTileLayerToMap, getPolygonLayer, getMultiPolygonLayer } from '../utils/Layers'
 
+
+/**
+ * Collects data, and visually applies layers to base Map class to draw data to the entire map.
+ * 
+ * getCountyData hook -> Collects all GeoJSON data.
+ * generateRandomColour hook -> Generates a random rgb colour. Example: 'rgb(20,51,143,0.3)'.
+ * addViewToOLMap hook -> Creates a View layer with OpenLayers. Adds center coordinates and uses zoomValue to set overall zoom and minimum zoom. Returns View class.
+ * getVectorLayer hook -> Uses GeoJSON coordinates and generates features that are added to vectorSource and finally all of them are set to vectorLayer. Returns VectorLayer class.
+ * loadOpenLayersMap hook -> Used to finalize the actual OpenLayers Map class to be sent to a div element.
+ * 
+ * @returns A parent div element. Which holds a child div element that contains the entire map that is visually drawn.
+ */
 function OpenLayersMap() {
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
+  const [estoniaCenterCoord] = useState<[number,number]>([25.0136, 58.5953])
 
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_full.geojson")
     .then(res => res.json())
     .then(json => {
-      const regionData = json.features
-      setRegionFeatureCollection(regionData)
+      setRegionFeatureCollection(json.features)
     })
   }, [])
 
@@ -66,10 +75,10 @@ function OpenLayersMap() {
     
     mapRef.current = new Map({
       target: elementRef.current,
-      view: addViewToOLMap([25.0136, 58.5953], 8.5),
+      view: addViewToOLMap(estoniaCenterCoord, 8.5),
       layers: [getTileLayerToMap(), getVectorLayer(data) ]
     })
-  } ,[getVectorLayer, addViewToOLMap])
+  } ,[getVectorLayer, addViewToOLMap, estoniaCenterCoord])
 
   useEffect(() => {
     getCountyData()
