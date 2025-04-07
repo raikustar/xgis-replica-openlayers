@@ -6,7 +6,3 @@
 export function getRandomNumber(min:number = 1, max:number = 255): number {
   return Math.round((Math.random() * max) - min)
 }
-
-
-
-

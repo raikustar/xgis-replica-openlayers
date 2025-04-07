@@ -1,22 +1,20 @@
 
 import { useCallback, useEffect, useRef, useState} from 'react'
-import { Feature, Map, View } from "ol"
+import { Map, View } from "ol"
 import { fromLonLat } from 'ol/proj'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
-import { MultiPolygon, Polygon } from 'ol/geom'
-import { Style, Stroke, Fill } from 'ol/style'
-import TileLayer from 'ol/layer/Tile'
-import { OSM } from 'ol/source'
 
-import { GeoJSONCollection} from '../utils/OpenLayersTypes'
+
+import { GeoJSONCollection} from '../utils/LayersTypes'
 import { getRandomNumber } from '../utils/Common'
+import { getTileLayerToMap, getPolygonLayer, getMultiPolygonLayer } from '../utils/Layers'
 
 function OpenLayersMap() {
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
-
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
+
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_full.geojson")
     .then(res => res.json())
@@ -69,7 +67,7 @@ function OpenLayersMap() {
     mapRef.current = new Map({
       target: elementRef.current,
       view: addViewToOLMap([25.0136, 58.5953], 8.5),
-      layers: [getTileLayerToOLMap(), getVectorLayer(data) ]
+      layers: [getTileLayerToMap(), getVectorLayer(data) ]
     })
   } ,[getVectorLayer, addViewToOLMap])
 
@@ -83,37 +81,6 @@ function OpenLayersMap() {
     }
   }, [loadOpenLayersMap, regionFeatureCollection])
   
-  
-
-  function getTileLayerToOLMap() {
-    const tileLayer = new TileLayer({
-      source: new OSM()
-    })
-    return tileLayer
-  }
-
-  function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)") {
-    const feature = new Feature({
-      geometry: new Polygon(coordinates)
-    })
-    feature.setStyle(new Style({
-      fill: new Fill({ color: fillColour}),
-      stroke: new Stroke({ color:strokeColour, width: 1 })          
-    }))
-    return feature
-  }
-
-  function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)") {
-    const feature = new Feature({
-      geometry: new MultiPolygon(coordinates)
-    })
-    feature.setStyle(new Style({
-      fill: new Fill({ color: fillColour}),
-      stroke: new Stroke({ color:strokeColour, width: 1 })          
-    }))
-    return feature
-  }
-
   return (
     <div id="map_parent">
       <div ref={elementRef} className="ol-map"></div>

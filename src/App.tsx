@@ -1,11 +1,11 @@
 import './App.css'
-import OpenLayersMap from './components/OpenLayersMap'
+import DrawMap from './components/DrawMap'
 
 function App() {
   
   return (
     <div>
-      <OpenLayersMap/>
+      <DrawMap/>
     </div>
   )
 }
