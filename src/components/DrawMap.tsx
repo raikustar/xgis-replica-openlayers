@@ -9,13 +9,13 @@ import { getTileLayerToMap, getPolygonLayer, getMultiPolygonLayer } from '../uti
 
 
 /**
- * @remarks Collects data, and visually applies layers to base Map class to draw data to the entire map.
+ * @remarks Collects data and visually applies layers to base Map class to draw data to the entire map.
  * 
  * `getCountyData` hook -> Collects all GeoJSON data.
  * 
  * `generateRandomColour` hook -> Generates a random rgb colour. Example: 'rgb(20,51,143,0.3)'.
  * 
- * `addViewToOLMap` hook -> Creates a View layer with OpenLayers. Adds center coordinates and uses zoomValue to set overall zoom and minimum zoom. Returns View class.
+ * `addViewToOLMap` hook -> Creates a View layer with OpenLayers. Adds center coordinates and uses zoomValue to set overall zoom and minimum zoom, also has extent coordinates to keep user within range of country. Returns View class.
  * 
  * `getVectorLayer` hook -> Uses GeoJSON coordinates and generates features that are added to vectorSource and finally all of them are set to vectorLayer. Returns VectorLayer class.
  * 
@@ -28,9 +28,14 @@ function OpenLayersMap() {
   const mapRef = useRef<Map>(null)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
   const [estoniaCenterCoord] = useState<[number,number]>([25.0136, 58.5953])
-  const [coordinateBounds] = useState<number[]>(
-    [2359973.2048174,7842318.501813691,
-    3212680.504293876, 8355344.071125067])
+  const [coordinateBounds] = useState<number[]>(  
+    [
+      2819973.2048174,
+      8082318.501813691,
+      2952680.504293876,
+      8105344.071125067
+    ]
+  )
 
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_full.geojson")
@@ -52,7 +57,8 @@ function OpenLayersMap() {
       center: fromLonLat(centerCoords),
       zoom: zoomValue,
       minZoom: zoomValue,
-      extent: coordinateBounds
+      extent: coordinateBounds,
+      constrainOnlyCenter: true
     });
     return view
   }, [coordinateBounds])
@@ -83,7 +89,7 @@ function OpenLayersMap() {
     
     mapRef.current = new Map({
       target: elementRef.current,
-      view: addViewToOLMap(estoniaCenterCoord, 6.5),
+      view: addViewToOLMap(estoniaCenterCoord, 8),
       layers: [getTileLayerToMap(), addVectorLayer(data) ]
     })
   } ,[addVectorLayer, addViewToOLMap, estoniaCenterCoord])
