@@ -11,6 +11,15 @@
   text-align: center;
 }
 
+/* Preset flex styles */
+.flex-c {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* OpenLayer map element */
 .ol-map {
   position: absolute;
   left: 0;
@@ -19,27 +28,61 @@
   height: 100vh;
 }
 
+/* OpenLayer map zoom element */
 .map_zoom_control {
   position: absolute;
   bottom: 10px;
   right: 10px;
 }
+
+/* OpenLayer map zoom element buttons */
 .map_zoom_control button {
   width: 30px;
   height: 30px;
 }
-
 .map_zoom_control button:hover {
   background-color: var(--col-lightblue);
 }
 
+/* Custom menu for the OpenLayer map */
 .selection_menu {
-  display: none;
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 350px;
   height: 100vh;
   background-color: rgb(50, 50, 50, 0.5);
+  animation-duration: 200ms;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes menu-animation-open {
+  0% {
+    width: 0px;
+  } 100% {
+    width: 350px;
+  }
+}
+
+@keyframes menu-animation-close {
+  0% {
+    width: 350px;
+  } 100% {
+    width: 0px;
+  }
+}
+
+.selection_menu_button {
+  position: absolute;
+  right: -40px;
+  top: 0;
+  background-color: snow;
+  color: black;
+  border-radius:0 0 10px 0;
+  width: 40px;
+  height:80px;
+}
+
+.selection_menu_button:active {
+  outline: none;
 }
