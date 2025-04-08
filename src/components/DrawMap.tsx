@@ -28,14 +28,9 @@ function OpenLayersMap() {
   const mapRef = useRef<Map>(null)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
   const [estoniaCenterCoord] = useState<[number,number]>([25.0136, 58.5953])
-  const [coordinateBounds] = useState<number[]>(  
-    [
-      2819973.2048174,
-      8082318.501813691,
-      2952680.504293876,
-      8105344.071125067
-    ]
-  )
+  const [coordinateBounds] = useState<number[]>(
+    [2259973.2048174,7742318.501813691,
+    3312680.504293876, 8455344.07112506])
 
   const getCountyData = useCallback(() => {
     fetch("static_data/counties_full.geojson")
@@ -58,7 +53,6 @@ function OpenLayersMap() {
       zoom: zoomValue,
       minZoom: zoomValue,
       extent: coordinateBounds,
-      constrainOnlyCenter: true
     });
     return view
   }, [coordinateBounds])
@@ -89,7 +83,7 @@ function OpenLayersMap() {
     
     mapRef.current = new Map({
       target: elementRef.current,
-      view: addViewToOLMap(estoniaCenterCoord, 8),
+      view: addViewToOLMap(estoniaCenterCoord, 1),
       layers: [getTileLayerToMap(), addVectorLayer(data) ]
     })
   } ,[addVectorLayer, addViewToOLMap, estoniaCenterCoord])
