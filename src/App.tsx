@@ -4,9 +4,10 @@ import DrawMap from './components/DrawMap'
 function App() {
   
   return (
-    <div>
-      <DrawMap/>
-    </div>
+    <>
+    <DrawMap/>
+    <div className='selection_menu'></div>
+    </>
   )
 }
 

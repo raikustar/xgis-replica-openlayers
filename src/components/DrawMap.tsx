@@ -6,6 +6,7 @@ import VectorSource from 'ol/source/Vector'
 import { GeoJSONCollection} from '../utils/LayersTypes'
 import { getRandomNumber } from '../utils/Common'
 import { getTileLayerToMap, getPolygonLayer, getMultiPolygonLayer } from '../utils/Layers'
+import Zoom from 'ol/control/Zoom'
 
 
 /**
@@ -82,6 +83,7 @@ function OpenLayersMap() {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
     
     mapRef.current = new Map({
+      controls: [new Zoom({className: "map_zoom_control"})],
       target: elementRef.current,
       view: addViewToOLMap(estoniaCenterCoord, 1),
       layers: [getTileLayerToMap(), addVectorLayer(data) ]
