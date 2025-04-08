@@ -47,31 +47,35 @@
 /* Custom menu for the OpenLayer map */
 .selection_menu {
   position: absolute;
-  left: 0;
   top: 0;
   bottom: 0;
   height: 100vh;
+  width: 350px;
   background-color: rgb(50, 50, 50, 0.5);
-  animation-duration: 200ms;
+  animation-duration: 200ms; 
   animation-timing-function: ease-in-out;
 }
 
+
+/* Keyframes for selection_menu animation toggle */
 @keyframes menu-animation-open {
   0% {
-    width: 0px;
+    left: 0px;
   } 100% {
-    width: 350px;
+    left: -350px;
   }
 }
 
 @keyframes menu-animation-close {
   0% {
-    width: 350px;
+    left: -350px;
   } 100% {
-    width: 0px;
+    left: 0px;
   }
 }
 
+
+/* selection_menu button styles */
 .selection_menu_button {
   position: absolute;
   right: -40px;
@@ -82,7 +86,14 @@
   width: 40px;
   height:80px;
 }
-
 .selection_menu_button:active {
   outline: none;
+}
+
+/* All the interactive fields to change data in selection_menu */
+.selection_menu_fields {
+  position: relative;
+  width: 350px;
+  background-color: lightblue;
+  height: 100%;
 }
