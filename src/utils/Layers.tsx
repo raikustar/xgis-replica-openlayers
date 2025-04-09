@@ -72,6 +72,7 @@ export function addViewToOpenLayersMap(centerCoords:number[], zoomValue:number =
         zoom: zoomValue,
         minZoom: zoomValue,
         extent: coordinateBounds,
+        padding:[0,0,0,0]
     });
     return view
 }

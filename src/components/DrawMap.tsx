@@ -26,7 +26,7 @@ function OpenLayersMap() {
   const [mapDrawToggle] = useState<boolean>(true)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
   const [estoniaCenterCoord] = useState<[number,number]>([25.0136, 58.5953])
-  const [coordinateBounds] = useState<number[]>([2259973.2048174,7742318.501813691,3312680.504293876, 8455344.07112506])
+  const [coordinateBounds] = useState<number[]>([2159973.2048174,7742318.501813691,3292680.504293876, 8455344.07112506])
 
   const getCountyData = useCallback(() => {
     fetch("static_data/geojson/counties_full.geojson")
@@ -45,13 +45,14 @@ function OpenLayersMap() {
     
     const viewLayer = addViewToOpenLayersMap(estoniaCenterCoord, 5, coordinateBounds)
     const tileLayer = getTileLayerToMap()
-    
+
     mapRef.current = new Map({
       controls: [new Zoom({className: "map_zoom_control"})],
       target: elementRef.current,
       view: viewLayer,
       layers: [tileLayer]
     })
+    
   } ,[coordinateBounds, estoniaCenterCoord])
 
   const toggleVectorLayer = useCallback((mapBoolean: boolean) => {
