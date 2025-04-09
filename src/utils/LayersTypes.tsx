@@ -17,6 +17,23 @@ type MultiPolygonGeometry = {
 }
 type Geometry = PolygonGeometry | MultiPolygonGeometry
 
+type MainIndex = {
+  code: Code,
+  datasets: []
+  label: Label
+}
+
+type Label = {
+  en: string,
+  et: string
+}
+
+type Code = {
+  code: string
+}
+
+export type MainIndexCollection = MainIndex[]
+
 export type GeoJSONCollection = GeoJSONType[]
 
 

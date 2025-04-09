@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState} from 'react'
-import { Map, View } from "ol"
-import { fromLonLat } from 'ol/proj'
+import {  Map } from "ol"
 import VectorLayer from 'ol/layer/Vector'
-import VectorSource from 'ol/source/Vector'
 import { GeoJSONCollection} from '../utils/LayersTypes'
-import { getRandomNumber } from '../utils/Common'
-import { getTileLayerToMap, getPolygonLayer, getMultiPolygonLayer } from '../utils/Layers'
+import { getTileLayerToMap, addViewToOpenLayersMap, addVectorLayerToOpenLayersMap } from '../utils/Layers'
 import Zoom from 'ol/control/Zoom'
 
 
@@ -14,81 +11,67 @@ import Zoom from 'ol/control/Zoom'
  * 
  * `getCountyData` hook -> Collects all GeoJSON data.
  * 
- * `generateRandomColour` hook -> Generates a random rgb colour. Example: 'rgb(20,51,143,0.3)'.
- * 
  * `addViewToOLMap` hook -> Creates a View layer with OpenLayers. Adds center coordinates and uses zoomValue to set overall zoom and minimum zoom, also has extent coordinates to keep user within range of country. Returns View class.
  * 
- * `getVectorLayer` hook -> Uses GeoJSON coordinates and generates features that are added to vectorSource and finally all of them are set to vectorLayer. Returns VectorLayer class.
+ * `addVectorLayer` hook -> Uses GeoJSON coordinates and generates features that are added to vectorSource and finally all of them are set to vectorLayer. Returns VectorLayer class.
  * 
  * `loadOpenLayersMap` hook -> Used to finalize the actual OpenLayers Map class to be sent to a div element.
+ * 
+ * `toggleVectorLayer` hook -> Used to toggle if map has counties drawn or not. setMapDrawToggle state to be used to change that.
  * 
  * @returns A parent div element. Which holds a child div element that contains the entire map that is visually drawn.
  */
 function OpenLayersMap() {
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
+  const vectorLayerRef = useRef<VectorLayer | null>(null)
+  const [mapDrawToggle] = useState<boolean>(true)
   const [regionFeatureCollection, setRegionFeatureCollection] = useState<GeoJSONCollection>([])
   const [estoniaCenterCoord] = useState<[number,number]>([25.0136, 58.5953])
-  const [coordinateBounds] = useState<number[]>(
-    [2259973.2048174,7742318.501813691,
-    3312680.504293876, 8455344.07112506])
+  const [coordinateBounds] = useState<number[]>([2259973.2048174,7742318.501813691,3312680.504293876, 8455344.07112506])
 
   const getCountyData = useCallback(() => {
-    fetch("static_data/counties_full.geojson")
+    fetch("static_data/geojson/counties_full.geojson")
     .then(res => res.json())
     .then(json => {
       setRegionFeatureCollection(json.features)
     })
   }, [])
 
-  const generateRandomColour = useCallback(() => {
-    const r = getRandomNumber()
-    const g = getRandomNumber()
-    const b = getRandomNumber()
-    return `rgb(${r},${g},${b},0.3)`
-  }, [])
+  const addViewToOLMap = useCallback(() => {
+    return addViewToOpenLayersMap(estoniaCenterCoord, 5, coordinateBounds)
+  }, [estoniaCenterCoord, coordinateBounds])
 
-  const addViewToOLMap = useCallback((centerCoords:number[], zoomValue:number = 1) => {
-    const view = new View({
-      center: fromLonLat(centerCoords),
-      zoom: zoomValue,
-      minZoom: zoomValue,
-      extent: coordinateBounds,
-    });
-    return view
-  }, [coordinateBounds])
+  const addVectorLayer = useCallback(() => {
+    return addVectorLayerToOpenLayersMap(regionFeatureCollection)
+  }, [regionFeatureCollection])
 
-  const addVectorLayer = useCallback((data:GeoJSONCollection) => {
-    const vectorSource = new VectorSource({})
-    data.forEach((county) => {
-      let feature;
-      const geometryType = county?.geometry?.type
-      const coords = county?.geometry?.coordinates
-      if (geometryType === "Polygon" && coords) {
-        feature = getPolygonLayer(coords, generateRandomColour())
-      } else if (geometryType === "MultiPolygon" && coords) {
-        feature = getMultiPolygonLayer(coords, generateRandomColour())
-      }
-      if (feature) {
-        vectorSource.addFeature(feature)
-      }
-    })
-    
-    const vectorLayer = new VectorLayer({})
-    vectorLayer.setSource(vectorSource)
-    return vectorLayer
-  }, [generateRandomColour])
-
-  const loadOpenLayersMap = useCallback((data:GeoJSONCollection) => {
+  const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
+    
+    const viewLayer = addViewToOLMap()
+    const tileLayer = getTileLayerToMap()
     
     mapRef.current = new Map({
       controls: [new Zoom({className: "map_zoom_control"})],
       target: elementRef.current,
-      view: addViewToOLMap(estoniaCenterCoord, 1),
-      layers: [getTileLayerToMap(), addVectorLayer(data) ]
+      view: viewLayer,
+      layers: [tileLayer]
     })
-  } ,[addVectorLayer, addViewToOLMap, estoniaCenterCoord])
+  } ,[addViewToOLMap])
+
+  const toggleVectorLayer = useCallback((mapBoolean: boolean) => {
+    const vectorTest = addVectorLayer()
+    if (mapRef.current) {
+        if (vectorLayerRef.current === null && mapBoolean) {
+          vectorLayerRef.current = vectorTest
+          mapRef.current.addLayer(vectorTest) 
+        } else if (vectorLayerRef.current && !mapBoolean) {
+          mapRef.current.removeLayer(vectorLayerRef.current)
+          vectorLayerRef.current = null
+        }
+    }
+}, [addVectorLayer])
 
   useEffect(() => {
     getCountyData()
@@ -98,9 +81,8 @@ function OpenLayersMap() {
     if (regionFeatureCollection.length >= 1) {
       loadOpenLayersMap(regionFeatureCollection)
     }
-  }, [loadOpenLayersMap, regionFeatureCollection])
-
- 
+    toggleVectorLayer(mapDrawToggle)
+  }, [loadOpenLayersMap, addVectorLayer, regionFeatureCollection, mapDrawToggle, toggleVectorLayer])
 
   return (
     <div id="map_parent">

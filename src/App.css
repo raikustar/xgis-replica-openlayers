@@ -1,7 +1,11 @@
 @import "node_modules/ol/ol.css";
 
 :root {
-  --col-lightblue: rgb(208, 237, 247)
+  /* Colours */
+  --col-lightblue: rgb(208, 237, 247);
+
+  /* Pixel values */
+  --var-width: 350px
 }
 
 #root {
@@ -50,7 +54,7 @@
   top: 0;
   bottom: 0;
   height: 100vh;
-  width: 350px;
+  width: var(--var-width);
   background-color: rgb(50, 50, 50, 0.5);
   animation-duration: 200ms; 
   animation-timing-function: ease-in-out;
@@ -84,16 +88,49 @@
   color: black;
   border-radius:0 0 10px 0;
   width: 40px;
-  height:80px;
+  height: 80px;
 }
 .selection_menu_button:active {
   outline: none;
 }
 
 /* All the interactive fields to change data in selection_menu */
-.selection_menu_fields {
+.selection_menu_section {
+  display: grid;
+  grid-template-rows: 200px auto 120px;
   position: relative;
-  width: 350px;
-  background-color: lightblue;
+  width: var(--var-width);
+  background-color: snow;
   height: 100%;
+}
+
+.selection_menu_logobox {
+  /* position: absolute;
+  top: 0px; */
+  width: var(--var-width);
+  height: 200px;
+  color: black;
+}
+
+.selection_menu_logobox div {
+  width: var(--var-width);
+  height: 50px;
+  background-color: lightblue;
+}
+
+.selection_menu_options {
+  /* position: absolute;
+  top: 200px; */
+  width: var(--var-width);
+  height: auto;
+  background-color: snow;
+}
+
+.selection_menu_databox {
+  position: absolute;
+  bottom: 0px;
+  width: var(--var-width);
+  height: 120px;
+  border-top: 1px solid black;
+  color: green;
 }
