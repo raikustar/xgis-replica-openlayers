@@ -11,8 +11,6 @@ import Zoom from 'ol/control/Zoom'
  * 
  * `getCountyData` hook -> Collects all GeoJSON data.
  * 
- * `addViewToOLMap` hook -> Creates a View layer with OpenLayers. Adds center coordinates and uses zoomValue to set overall zoom and minimum zoom, also has extent coordinates to keep user within range of country. Returns View class.
- * 
  * `addVectorLayer` hook -> Uses GeoJSON coordinates and generates features that are added to vectorSource and finally all of them are set to vectorLayer. Returns VectorLayer class.
  * 
  * `loadOpenLayersMap` hook -> Used to finalize the actual OpenLayers Map class to be sent to a div element.
@@ -38,10 +36,6 @@ function OpenLayersMap() {
     })
   }, [])
 
-  const addViewToOLMap = useCallback(() => {
-    return addViewToOpenLayersMap(estoniaCenterCoord, 5, coordinateBounds)
-  }, [estoniaCenterCoord, coordinateBounds])
-
   const addVectorLayer = useCallback(() => {
     return addVectorLayerToOpenLayersMap(regionFeatureCollection)
   }, [regionFeatureCollection])
@@ -49,7 +43,7 @@ function OpenLayersMap() {
   const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
     
-    const viewLayer = addViewToOLMap()
+    const viewLayer = addViewToOpenLayersMap(estoniaCenterCoord, 5, coordinateBounds)
     const tileLayer = getTileLayerToMap()
     
     mapRef.current = new Map({
@@ -58,7 +52,7 @@ function OpenLayersMap() {
       view: viewLayer,
       layers: [tileLayer]
     })
-  } ,[addViewToOLMap])
+  } ,[coordinateBounds, estoniaCenterCoord])
 
   const toggleVectorLayer = useCallback((mapBoolean: boolean) => {
     const vectorTest = addVectorLayer()
