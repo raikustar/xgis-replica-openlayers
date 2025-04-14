@@ -7,7 +7,7 @@ import { GeoJSONCollection } from './LayersTypes'
 import VectorLayer from 'ol/layer/Vector'
 import { fromLonLat } from 'ol/proj'
 import VectorSource from 'ol/source/Vector'
-import { getRandomColour } from './Common'
+import { getRandomColour } from '../Common'
 
 
 /**

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState} from 'react'
 import {  Map } from "ol"
 import VectorLayer from 'ol/layer/Vector'
-import { GeoJSONCollection} from '../utils/LayersTypes'
-import { getTileLayerToMap, addViewToOpenLayersMap, addVectorLayerToOpenLayersMap } from '../utils/Layers'
+import { GeoJSONCollection} from '../utils/Layers/LayersTypes'
+import { getTileLayerToMap, addViewToOpenLayersMap, addVectorLayerToOpenLayersMap } from '../utils/Layers/Layers'
 import Zoom from 'ol/control/Zoom'
 
 
