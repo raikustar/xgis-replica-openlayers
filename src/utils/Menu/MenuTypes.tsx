@@ -1,8 +1,4 @@
-type MainIndex = {
-    code: Code,
-    datasets: DataSet[]
-    label: Label
-}
+
 
 type Label = {
     en: string,
@@ -10,12 +6,6 @@ type Label = {
 }
 type Code = {
     code: string
-}
-export type DataSet = {
-    code:string,
-    status:string,
-    updated:string,
-    label: DataSetLabel
 }
 
 type DataSetLabel = {
@@ -26,6 +16,27 @@ type DataSetLabel = {
 type DimensionLabelLanguage = {
     et:string,
     en:string
+}
+
+export type LabelSpecifier = {
+    [key: string]: number
+}
+
+export type DataSingle = {
+    [key: string]: LabelSpecifier[]
+}
+
+export type MainIndex = {
+    code: Code,
+    datasets: DataSet[]
+    label: Label
+}
+
+export type DataSet = {
+    code:string,
+    status:string,
+    updated:string,
+    label: DataSetLabel
 }
 
 export type DimensionLabelPair = {

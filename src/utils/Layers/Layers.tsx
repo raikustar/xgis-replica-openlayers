@@ -7,7 +7,8 @@ import { GeoJSONCollection } from './LayersTypes'
 import VectorLayer from 'ol/layer/Vector'
 import { fromLonLat } from 'ol/proj'
 import VectorSource from 'ol/source/Vector'
-import { getRandomColour } from '../Common'
+import { filterColorFromHexValue } from '../Common'
+
 
 
 /**
@@ -29,7 +30,7 @@ export function getTileLayerToMap(): TileLayer {
  * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
  * @returns The Feature class that contains all coordinates and colours of a Polygon shape. Used to add to a VectorSource.
  */
-export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)"):Feature {
+export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", strokeColour:string = "rgb(5,5,5)"):Feature {
     const feature = new Feature({
         geometry: new Polygon(coordinates)
     })
@@ -47,7 +48,7 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
  * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
  * @returns The Feature class that contains all coordinates and colours of a MultiPolygon shape. Used to add to a VectorSource.
  */
-export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0, 0.2)", strokeColour:string = "rgb(75,75,75,0.8)"):Feature {
+export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0)", strokeColour:string = "rgb(5,5,5)"):Feature {
     const feature = new Feature({
         geometry: new MultiPolygon(coordinates)
     })
@@ -83,10 +84,11 @@ export function addViewToOpenLayersMap(centerCoords:number[], zoomValue:number =
  * @param data - GeoJSON data that is used to draw the Polygons and MultiPolygons..
  * @returns A VectorLayer class.
  */
-export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection): VectorLayer {
+export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[]): VectorLayer {
     const vectorSource = new VectorSource({})
-    data.forEach((county) => {
-        const colour = getRandomColour()
+    data.forEach((county, i) => {
+        const idx = i % 5
+        const colour:string = filterColorFromHexValue(colors, idx)
         let feature;
         const geometryType = county?.geometry?.type
         const coords = county?.geometry?.coordinates
@@ -99,7 +101,11 @@ export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection): VectorLay
             vectorSource.addFeature(feature)
         }
     })  
-    const vectorLayer = new VectorLayer({})
+    const vectorLayer = new VectorLayer({
+        opacity:0.5
+    })
     vectorLayer.setSource(vectorSource)
     return vectorLayer
 }
+
+

@@ -8,6 +8,8 @@
   --var-width: 400px
 }
 
+
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -124,6 +126,17 @@
   background-color: snow;
 }
 
+/* radio button style */
+.radioInput {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
 .selection_menu_options_child {
   display: flex;
   flex-direction: column;
@@ -141,7 +154,6 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  height: 45px;
 }
 
 .selection_select_child {
@@ -153,15 +165,10 @@
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  background-color: var(--col-lightblue);
 }
 
 .selection_form {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
   height: auto;
 }
 

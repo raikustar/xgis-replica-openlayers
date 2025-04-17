@@ -1,3 +1,5 @@
+import hexRgb, { RgbaObject } from "hex-rgb"
+
 /**
  * @param max - First input for maximum number. Default is 255.
  * @param min - Second input for minimum number. Default is 1.
@@ -20,3 +22,14 @@ export function getRandomColour(): string {
   const b = getRandomNumber()
   return `rgb(${r},${g},${b},0.3)`
 }
+
+
+export function filterColorFromHexValue(colors:string[], index: number = 0): string {
+  if (colors.length >= 1) {
+    const color:RgbaObject = hexRgb(colors[index])
+    return `rgb(${color.red}, ${color.green}, ${color.blue})`
+  } 
+  return "rgb(0,0,0,0)"
+}
+
+

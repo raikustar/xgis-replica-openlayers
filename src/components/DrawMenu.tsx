@@ -1,16 +1,24 @@
 import { useCallback, useEffect, useRef, useState} from "react"
-import { MainIndexCollection } from "../utils/Menu/MenuTypes"
+import { DataSet, MainIndex, MainIndexCollection } from "../utils/menu/MenuTypes"
 import { useDataSetContext } from "../store/DataContext"
-import MenuRenderSelectDimensions from "../utils/Menu/MenuSelectDimensions"
+import MenuSelectDimensionsComponent from "./menu/MenuSelectDimensionsComponent"
+import { toggleRadioInputWindow } from "../utils/menu/Menu"
 
+
+/**
+ * Function component which is used to render the whole left-hand side menu.
+ * 
+ * @returns Functional react component
+ */
 function DrawMenu() {
-  const { setCode, setDimensions,setColorscheme } = useDataSetContext()
+  const { setCode, setDimensions, setColorscheme, transactionValue, yearValue, dataSetCode, setDataSetCode, setData} = useDataSetContext()
 
   const menuWindowRef = useRef<HTMLDivElement>(null)
   const [menuWidth, setMenuWidth] = useState<"0px" | "-400px">("0px")
   const [activeSelection, setActiveSelection] = useState<number>(0)
+  const [activeSelectionTwo, setActiveSelectionTwo] = useState<string>("")
   const [mainIndexCollection, setMainIndexCollection] = useState<MainIndexCollection>([])
-  
+
   /**
    * Updates menu to be hidden or visible.
    * Uses `menuWindowRef` div element and `menuWidth` react state to toggle the div elements left attribute.
@@ -39,34 +47,74 @@ function DrawMenu() {
     })
   },[])
 
-  useEffect(() => {
-    getIndexData()
-  }, [getIndexData])
-
-
-  function toggleOptionWindow(id:number, stringId: string) {
-    setActiveSelection(id)
-    const elementClass = document.querySelectorAll<HTMLElement>(".selection_box")
-    const elementId = document.getElementById(stringId)
-    if (elementClass) {
-      elementClass.forEach(el => el.style.display = "none")
-      if (elementId) {
-        elementId.style.display = "flex"
-      } 
-    }
-  }
-
-  function retrieveDatasetCode(dataSetCode:string) {
+  const getDatasetData = useCallback(() =>  {
     const fileName = `${dataSetCode}.json`
     fetch("/static_data/data/" + fileName)
-      .then(res => res.json())
-      .then(json => {
+      .then(res => {
+        const contentType = res.headers.get("content-type")
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Failed to get file")
+        } 
+        return res.json()
+      })
+      .then(json => { 
         if (json) {
+          const data = json.data.MK
+          const text:string = `${transactionValue}.${yearValue}`
+          setData(data[text])
           setCode(json.code)
           setDimensions(json.dimensions)
           setColorscheme(json.colorscheme)
         } 
       })
+      
+
+  },[setCode, setDimensions, setColorscheme, setData, transactionValue, yearValue, dataSetCode])
+
+  useEffect(() => {
+    getIndexData()
+  }, [getIndexData])
+
+  useEffect(() => {
+    getDatasetData()
+  }, [getDatasetData])
+
+  function toggleOptionWindowParent(id:number, htmlElementId: string, htmlParentClass:string) {
+    setActiveSelection(id)
+    setActiveSelectionTwo("")
+    toggleRadioInputWindow(htmlElementId,htmlParentClass)
+  }
+
+  function toggleOptionWindowChild(htmlElementId: string, htmlParentClass:string) {
+    setActiveSelectionTwo(htmlElementId)
+    setDataSetCode(htmlElementId)
+    toggleRadioInputWindow(htmlElementId,htmlParentClass)
+  }
+
+  function mainChoiceComponent(element:MainIndex) {
+    return (
+      <div className="selection_select">
+        <input type="radio" className="radioInput" value={Number(element.code)} id={String(element.code)+1000} name="radioInputChoice" onClick={() => toggleOptionWindowParent(Number(element.code), String(element.code), "selection_box")}/>
+        <p>{element.label.et}</p>
+      </div>
+
+    )
+  }
+
+  function secondaryChoiceComponent(el:DataSet, element:MainIndex) {
+    return (
+      <div key={el.code} id={String(el.code)} className="selection_select_child">
+        <div style={{display:"flex",flexDirection:"row", alignItems:"center", marginLeft:"52px"}}>
+          <input type="radio" className="radioInput" value={Number(element.code)} id={String(element.code)+2000} name="childRadioInputChoice" onClick={() => toggleOptionWindowChild(String(el.code), "selection_form")}/>
+          <p>{el.code}</p>
+        </div>
+        <div>
+          {activeSelectionTwo === String(el.code) &&
+            <MenuSelectDimensionsComponent/>
+          }
+        </div>
+      </div>
+    )
   }
   
   return (
@@ -81,36 +129,19 @@ function DrawMenu() {
               <div className="selection_menu_options">
                 {mainIndexCollection.map((element) => 
                   <div key={Number(element.code)} className="selection_menu_options_child">
-                    <div className="selection_select">
-                      <input type="radio" value={Number(element.code)} id={String(element.code)+1000} name="radioInputChoice" onClick={() => toggleOptionWindow(Number(element.code), String(element.code))}/>
-                      <p>{element.label.et}</p>
-                    </div>
+                    {mainChoiceComponent(element)}
                     <div className="selection_box" id={String(element.code)}>
                       {activeSelection === Number(element.code) && 
                         <div>
                           {element.datasets.map(el => 
-                            <div key={el.code} className="selection_select_child">
-                              <div style={{display:"flex",flexDirection:"row", alignItems:"center"}}>
-                                <input type="radio" value={Number(element.code)} id={String(element.code)+2000} name="childRadioInputChoice" onClick={() => retrieveDatasetCode(el.code)}/>
-                                <p>{el.code}</p>
-                              </div>
-                              <div>
-                                <MenuRenderSelectDimensions/>
-                              </div>
-                            </div>
+                            secondaryChoiceComponent(el, element)
                           )}
                         </div>
                       }                      
                     </div>
                   </div>
-                  
                 )}
-
-                
               </div>
-
-              
-
             <div className="selection_menu_databox"> Data text</div>
           </div>
       </div>

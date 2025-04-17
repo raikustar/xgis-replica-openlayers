@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { DimensionLabelPair } from "../utils/Menu/MenuTypes";
+import { DimensionLabelPair, LabelSpecifier } from "../utils/menu/MenuTypes";
 
 type DataContextType = {
   code: string,
@@ -10,6 +10,19 @@ type DataContextType = {
 
   colorscheme: string[],
   setColorscheme: (colors: string[]) => void
+
+  transactionValue: number,
+  setTransactionValue: (transaction:number) => void
+
+  yearValue: number,
+  setYearValue: (year:number) => void
+
+  dataSetCode: string,
+  setDataSetCode: (code: string) => void
+
+  data: LabelSpecifier,
+  setData: (data: LabelSpecifier) => void
+
 }
 
 export const DataContext = createContext<DataContextType | undefined>(undefined)
