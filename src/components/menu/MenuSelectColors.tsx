@@ -5,6 +5,8 @@ import { LabelSpecifier } from "../../utils/menu/MenuTypes"
 function MenuSelectColors() {
     const {colorscheme, data} = useDataSetContext()
 
+
+    // bs placeholder
     function filterColorRange(index:number, data:LabelSpecifier): string {
         const arr = Object.values(data)
         const max = arr.sort(function(a,b){return a-b}).reverse()

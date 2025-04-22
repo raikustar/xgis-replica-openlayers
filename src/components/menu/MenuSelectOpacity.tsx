@@ -1,6 +1,9 @@
 import { Slider } from "@mui/material"
 import { useDataSetContext } from "../../store/DataContext"
 
+/**
+ * React component that renders a MUI Slider that is used to change the opacity of drawn county shapes.
+ */
 function MenuSelectOpacity() {
     const { opacity, setOpacity } = useDataSetContext()
 

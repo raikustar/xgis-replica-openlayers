@@ -27,7 +27,7 @@ export function getTileLayerToMap(): TileLayer {
  * 
  * @param coordinates - Polygon input coordinates. Used to draw the shape inside of the Feature class.
  * @param fillColour - Inner shape colour. Default is 'rgb(255,0,0, 0.2)'.
- * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
+ * @param countyName - Name of the county. Default is an empty string.
  * @returns The Feature class that contains all coordinates and colours of a Polygon shape. Used to add to a VectorSource.
  */
 export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
@@ -51,7 +51,7 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
  * 
  * @param coordinates - MultiPolygon input coordinates. Used to draw the shape inside of the Feature class.
  * @param fillColour - Inner shape colour. Default is 'rgb(255,0,0, 0.2)'.
- * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
+ * @param countyName - Name of the county. Default is an empty string.
  * @returns The Feature class that contains all coordinates and colours of a MultiPolygon shape. Used to add to a VectorSource.
  */
 export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0)", countyName:string = ""):Feature {

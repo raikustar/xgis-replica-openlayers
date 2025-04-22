@@ -23,7 +23,11 @@ export function getRandomColour(): string {
   return `rgb(${r},${g},${b},0.3)`
 }
 
-
+/**
+ * Takes hex colour and converts to a rgb colour.
+ * 
+ * @returns A string containing a RGB colour.
+ */
 export function filterHexToRgb(colors:string[], index: number = 0): string {
   if (colors.length >= 1) {
     const color:RgbaObject = hexRgb(colors[index])
