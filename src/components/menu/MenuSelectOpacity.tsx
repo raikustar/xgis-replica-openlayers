@@ -4,6 +4,12 @@ import { useDataSetContext } from "../../store/DataContext"
 function MenuSelectOpacity() {
     const { opacity, setOpacity } = useDataSetContext()
 
+    /**
+     * MUI has two argument Event and Value 
+     * 
+     * @param _ - Empty event parameter
+     * @param sliderValue - Value that gets used to change the opacity if context.
+     */
     function changeSliderValue(_:Event, sliderValue:number) {
         setOpacity(sliderValue) 
     }

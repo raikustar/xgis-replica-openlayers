@@ -1,5 +1,5 @@
 import { MultiPolygon, Polygon } from 'ol/geom'
-import { Style, Stroke, Fill } from 'ol/style'
+import { Style, Stroke, Fill, Text } from 'ol/style'
 import TileLayer from 'ol/layer/Tile'
 import { OSM } from 'ol/source'
 import { Feature, View, } from "ol"
@@ -30,13 +30,19 @@ export function getTileLayerToMap(): TileLayer {
  * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
  * @returns The Feature class that contains all coordinates and colours of a Polygon shape. Used to add to a VectorSource.
  */
-export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", strokeColour:string = "rgb(5,5,5)"):Feature {
+export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
+    const strokeColour:string = "rgb(0,0,0)"
     const feature = new Feature({
         geometry: new Polygon(coordinates),
     })
     feature.setStyle(new Style({
         fill: new Fill({ color: fillColour}),
-        stroke: new Stroke({ color:strokeColour, width: 1 })          
+        stroke: new Stroke({ color:strokeColour, width: 1 }),
+        text: new Text({
+            text:countyName,
+            scale:1.5,
+            fill: new Fill({ color: strokeColour}),
+        })         
     }))
     return feature
 }
@@ -48,13 +54,19 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
  * @param strokeColour - Border colour of the shape. Default is 'rgb(75,75,75,0.8)'.
  * @returns The Feature class that contains all coordinates and colours of a MultiPolygon shape. Used to add to a VectorSource.
  */
-export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0)", strokeColour:string = "rgb(5,5,5)"):Feature {
+export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0)", countyName:string = ""):Feature {
+    const strokeColour:string = "rgb(0,0,0)"
     const feature = new Feature({
         geometry: new MultiPolygon(coordinates)
     })
     feature.setStyle(new Style({
         fill: new Fill({ color: fillColour}),
-        stroke: new Stroke({ color:strokeColour, width: 1 })          
+        stroke: new Stroke({ color:strokeColour, width: 1 }),
+        text: new Text({
+            text:countyName,
+            scale:1.5,
+            fill: new Fill({ color: strokeColour}),
+        })          
     }))
     return feature
 }
@@ -90,12 +102,13 @@ export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:str
         const idx = i % 5
         const colour:string = filterHexToRgb(colors, idx)
         let feature;
+        const countyName = county?.properties?.MNIMI
         const geometryType = county?.geometry?.type
         const coords = county?.geometry?.coordinates
         if (geometryType === "Polygon" && coords) {
-            feature = getPolygonLayer(coords, colour)
+            feature = getPolygonLayer(coords, colour, countyName)
         } else if (geometryType === "MultiPolygon" && coords) {
-            feature = getMultiPolygonLayer(coords, colour)
+            feature = getMultiPolygonLayer(coords, colour, countyName)
         }
         if (feature) {
             vectorSource.addFeature(feature)
