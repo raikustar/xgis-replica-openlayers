@@ -24,7 +24,7 @@ export function getRandomColour(): string {
 }
 
 
-export function filterColorFromHexValue(colors:string[], index: number = 0): string {
+export function filterHexToRgb(colors:string[], index: number = 0): string {
   if (colors.length >= 1) {
     const color:RgbaObject = hexRgb(colors[index])
     return `rgb(${color.red}, ${color.green}, ${color.blue})`

@@ -7,7 +7,7 @@ import { GeoJSONCollection } from './LayersTypes'
 import VectorLayer from 'ol/layer/Vector'
 import { fromLonLat } from 'ol/proj'
 import VectorSource from 'ol/source/Vector'
-import { filterColorFromHexValue } from '../Common'
+import { filterHexToRgb } from '../Common'
 
 
 
@@ -18,7 +18,7 @@ import { filterColorFromHexValue } from '../Common'
  */
 export function getTileLayerToMap(): TileLayer {
     const tileLayer = new TileLayer({
-        source: new OSM()
+        source: new OSM(),
     })
     return tileLayer
 }
@@ -32,7 +32,7 @@ export function getTileLayerToMap(): TileLayer {
  */
 export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", strokeColour:string = "rgb(5,5,5)"):Feature {
     const feature = new Feature({
-        geometry: new Polygon(coordinates)
+        geometry: new Polygon(coordinates),
     })
     feature.setStyle(new Style({
         fill: new Fill({ color: fillColour}),
@@ -84,11 +84,11 @@ export function addViewToOpenLayersMap(centerCoords:number[], zoomValue:number =
  * @param data - GeoJSON data that is used to draw the Polygons and MultiPolygons..
  * @returns A VectorLayer class.
  */
-export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[]): VectorLayer {
+export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.5): VectorLayer {
     const vectorSource = new VectorSource({})
     data.forEach((county, i) => {
         const idx = i % 5
-        const colour:string = filterColorFromHexValue(colors, idx)
+        const colour:string = filterHexToRgb(colors, idx)
         let feature;
         const geometryType = county?.geometry?.type
         const coords = county?.geometry?.coordinates
@@ -102,7 +102,7 @@ export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:str
         }
     })  
     const vectorLayer = new VectorLayer({
-        opacity:0.5
+        opacity:defaultOpacity
     })
     vectorLayer.setSource(vectorSource)
     return vectorLayer

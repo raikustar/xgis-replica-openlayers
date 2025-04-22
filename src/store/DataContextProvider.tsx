@@ -10,6 +10,7 @@ export const DataContextProvider:FC<{children:ReactNode}> = ({children}) => {
     const [yearValue, setYearValue] = useState<number>(0)
     const [dataSetCode, setDataSetCode] = useState<string>("")
     const [data, setData] = useState<LabelSpecifier>({})
+    const [opacity, setOpacity] = useState<number>(0.7)
 
 
     return (
@@ -21,7 +22,8 @@ export const DataContextProvider:FC<{children:ReactNode}> = ({children}) => {
             transactionValue, setTransactionValue,
             yearValue, setYearValue,
             dataSetCode, setDataSetCode,
-            data, setData
+            data, setData,
+            opacity, setOpacity
         }}>
             {children}
         </DataContext.Provider>

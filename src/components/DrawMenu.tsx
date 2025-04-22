@@ -11,7 +11,9 @@ import { toggleRadioInputWindow } from "../utils/menu/Menu"
  * @returns Functional react component
  */
 function DrawMenu() {
-  const { setCode, setDimensions, setColorscheme, transactionValue, yearValue, dataSetCode, setDataSetCode, setData} = useDataSetContext()
+  const { transactionValue, yearValue, dataSetCode,  
+    setCode, setDimensions, setColorscheme, 
+    setOpacity, setDataSetCode, setData} = useDataSetContext()
 
   const menuWindowRef = useRef<HTMLDivElement>(null)
   const [menuWidth, setMenuWidth] = useState<"0px" | "-400px">("0px")
@@ -62,6 +64,7 @@ function DrawMenu() {
           const data = json.data.MK
           const text:string = `${transactionValue}.${yearValue}`
           setData(data[text])
+          setOpacity(Number(json.defaultselection[1]))
           setCode(json.code)
           setDimensions(json.dimensions)
           setColorscheme(json.colorscheme)
@@ -69,7 +72,7 @@ function DrawMenu() {
       })
       
 
-  },[setCode, setDimensions, setColorscheme, setData, transactionValue, yearValue, dataSetCode])
+  },[setCode, setDimensions, setColorscheme, setData, transactionValue, yearValue, dataSetCode, setOpacity])
 
   useEffect(() => {
     getIndexData()

@@ -22,7 +22,7 @@ import { useDataSetContext } from '../store/DataContext'
  * @returns A parent div element. Which holds a child div element that contains the entire map that is visually drawn.
  */
 function DrawMap() {
-  const {colorscheme, data} = useDataSetContext()
+  const {colorscheme, data, opacity} = useDataSetContext()
 
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
@@ -40,8 +40,8 @@ function DrawMap() {
   }, [])
 
   const addVectorLayer = useCallback(() => {
-    return addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme)
-  }, [regionFeatureCollection, colorscheme])
+    return addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity)
+  }, [regionFeatureCollection, colorscheme, opacity])
 
   const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
@@ -53,7 +53,7 @@ function DrawMap() {
       controls: [new Zoom({className: "map_zoom_control"})],
       target: elementRef.current,
       view: viewLayer,
-      layers: [tileLayer]
+      layers: [tileLayer],
     })
     
   } ,[coordinateBounds, estoniaCenterCoord])

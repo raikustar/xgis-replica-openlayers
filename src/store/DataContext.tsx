@@ -23,6 +23,9 @@ type DataContextType = {
   data: LabelSpecifier,
   setData: (data: LabelSpecifier) => void
 
+  opacity: number,
+  setOpacity: (opacity:number) => void
+
 }
 
 export const DataContext = createContext<DataContextType | undefined>(undefined)

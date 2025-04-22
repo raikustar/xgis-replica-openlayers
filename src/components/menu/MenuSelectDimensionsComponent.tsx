@@ -1,6 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import { useDataSetContext } from "../../store/DataContext"
 import MenuSelectColors from "./MenuSelectColors"
+import MenuSelectOpacity from "./MenuSelectOpacity"
 
 
 /**
@@ -78,6 +79,7 @@ function MenuRenderSelectDimensions() {
       </div>
       )}
       <MenuSelectColors />
+      <MenuSelectOpacity />
       
   </>
   )
