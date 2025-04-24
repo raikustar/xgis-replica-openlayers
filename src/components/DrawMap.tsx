@@ -22,7 +22,7 @@ import { useDataSetContext } from '../store/DataContext'
  * @returns A parent div element. Which holds a child div element that contains the entire map that is visually drawn.
  */
 function DrawMap() {
-  const {colorscheme, data, opacity, parentMenuSelection, childMenuSelection} = useDataSetContext()
+  const {colorscheme, data, opacity, childMenuSelection} = useDataSetContext()
 
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
@@ -40,8 +40,8 @@ function DrawMap() {
   }, [])
 
   const addVectorLayer = useCallback(
-    () => addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity)
-  ,[regionFeatureCollection, colorscheme, opacity])
+    () => addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity, data)
+  ,[regionFeatureCollection, colorscheme, opacity, data])
 
   const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
@@ -77,7 +77,6 @@ function DrawMap() {
 
   useEffect(() => {
     loadOpenLayersMap(regionFeatureCollection)
-    
     toggleVectorLayer(false)
     if (childMenuSelection !== "") {
       toggleVectorLayer(true)

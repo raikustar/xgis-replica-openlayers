@@ -8,6 +8,7 @@ import VectorLayer from 'ol/layer/Vector'
 import { fromLonLat } from 'ol/proj'
 import VectorSource from 'ol/source/Vector'
 import { filterHexToRgb } from '../Common'
+import { LabelSpecifier } from '../menu/MenuTypes'
 
 
 
@@ -40,7 +41,7 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
         stroke: new Stroke({ color:strokeColour, width: 1 }),
         text: new Text({
             text:countyName,
-            scale:1.5,
+            scale:1.2,
             fill: new Fill({ color: strokeColour}),
         })         
     }))
@@ -64,7 +65,7 @@ export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0
         stroke: new Stroke({ color:strokeColour, width: 1 }),
         text: new Text({
             text:countyName,
-            scale:1.5,
+            scale:1.2,
             fill: new Fill({ color: strokeColour}),
         })          
     }))
@@ -96,19 +97,26 @@ export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:n
  * @param data - GeoJSON data that is used to draw the Polygons and MultiPolygons..
  * @returns A VectorLayer class.
  */
-export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.7): VectorLayer {
+export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.7, data:LabelSpecifier): VectorLayer {
     const vectorSource = new VectorSource({})
-    data.forEach((county, i) => {
+    geoData.forEach((county, i) => {
+        let feature;
+
         const idx = i % 5
         const colour:string = filterHexToRgb(colors, idx)
-        let feature;
-        const countyName = county?.properties?.MNIMI
+
+        const countyCode = county?.properties?.MKOOD
         const geometryType = county?.geometry?.type
         const coords = county?.geometry?.coordinates
+        const code = getCountyCode(data, countyCode)
+        const countyName = county?.properties?.MNIMI
+
+        const text:string = `${countyName} \n ${code}`
+
         if (geometryType === "Polygon" && coords) {
-            feature = getPolygonLayer(coords, colour, countyName)
+            feature = getPolygonLayer(coords, colour, text)
         } else if (geometryType === "MultiPolygon" && coords) {
-            feature = getMultiPolygonLayer(coords, colour, countyName)
+            feature = getMultiPolygonLayer(coords, colour, text)
         }
 
         if (feature) {
@@ -123,3 +131,11 @@ export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:str
 }
 
 
+/**
+ * Checks if county code has a specific key and returns that key string.
+ *  
+ * If not returns an empty string.
+ */
+function getCountyCode(data:LabelSpecifier, countyCode:string) {    
+    return data[countyCode] ?? ""
+}

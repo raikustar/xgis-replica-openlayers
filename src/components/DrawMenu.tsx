@@ -66,7 +66,6 @@ function DrawMenu() {
           const data = json.data.MK
           const text:string = `${transactionValue}.${yearValue}`
           setData(data[text])
-          setOpacity(Number(json.defaultselection[1]))
           setCode(json.code)
           setDimensions(json.dimensions)
           setColorscheme(json.colorscheme)
@@ -74,7 +73,7 @@ function DrawMenu() {
       })
       
 
-  },[setCode, setDimensions, setColorscheme, setData, transactionValue, yearValue, dataSetCode, setOpacity])
+  },[setCode, setDimensions, setColorscheme, setData, transactionValue, yearValue, dataSetCode])
 
   useEffect(() => {
     getIndexData()

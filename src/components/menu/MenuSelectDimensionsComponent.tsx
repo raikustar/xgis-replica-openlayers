@@ -2,6 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import { useDataSetContext } from "../../store/DataContext"
 import MenuSelectColors from "./MenuSelectColors"
 import MenuSelectOpacity from "./MenuSelectOpacity"
+import { DimensionLabelPair } from "../../utils/menu/MenuTypes"
 
 
 /**
@@ -14,7 +15,7 @@ function MenuRenderSelectDimensions() {
 
   return (
     <>
-      {dimensions?.map((dims,jndx) => 
+      {dimensions?.map((dims:DimensionLabelPair,jndx) => 
       <div key={jndx}> 
       {dims.label.en === "Transaction" && dims.label.et === "Tehing" &&
         <div className="selection_form">
