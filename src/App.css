@@ -3,6 +3,7 @@
 :root {
   /* Colours */
   --col-lightblue: rgb(208, 237, 247);
+  --col-purple: rgb(111, 125, 168);
 
   /* Pixel values */
   --var-width: 400px
@@ -107,9 +108,10 @@
 }
 
 .selection_menu_logobox {
-  /* position: absolute;
-  top: 0px; */
   width: var(--var-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: 200px;
   color: black;
 }
@@ -117,14 +119,31 @@
 .selection_menu_logobox div {
   width: var(--var-width);
   height: 50px;
-  background-color: lightblue;
+  background-color: black;
 }
 
 .selection_menu_options {
   width: var(--var-width);
   height: auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+}
+
+/* Scrollbar styling*/
+.selection_menu_options::-webkit-scrollbar {
+  width: 12px;
+}
+.selection_menu_options::-webkit-scrollbar-thumb {
+  background-color: var(--col-purple);
+}
+.selection_menu_options::-webkit-scrollbar-thumb:window-inactive {
   background-color: snow;
 }
+
+
+
+
 
 /* radio button style */
 .radioInput {

@@ -75,11 +75,11 @@ export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0
  * The View class is added to the base Map class. Used to keep the user inside of a specific view range.
  * 
  * @param centerCoords - Array coordinates of the center of Estonia. Required input.
- * @param zoomValue - Sets initial zoom value and minimum zoom value. Default is 1.
  * @param coordinateBounds - Array of boundry coordinates to keep the user within bounds of Estonia. 
  * @returns A View class.
  */
-export function addViewToOpenLayersMap(centerCoords:number[], zoomValue:number = 1, coordinateBounds:number[]): View {
+export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:number[]): View {
+    const zoomValue:number = 5
     const view = new View({
         center: fromLonLat(centerCoords),
         zoom: zoomValue,
@@ -96,7 +96,7 @@ export function addViewToOpenLayersMap(centerCoords:number[], zoomValue:number =
  * @param data - GeoJSON data that is used to draw the Polygons and MultiPolygons..
  * @returns A VectorLayer class.
  */
-export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.5): VectorLayer {
+export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.7): VectorLayer {
     const vectorSource = new VectorSource({})
     data.forEach((county, i) => {
         const idx = i % 5
@@ -110,6 +110,7 @@ export function addVectorLayerToOpenLayersMap(data:GeoJSONCollection, colors:str
         } else if (geometryType === "MultiPolygon" && coords) {
             feature = getMultiPolygonLayer(coords, colour, countyName)
         }
+
         if (feature) {
             vectorSource.addFeature(feature)
         }

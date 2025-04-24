@@ -11,14 +11,16 @@ import { toggleRadioInputWindow } from "../utils/menu/Menu"
  * @returns Functional react component
  */
 function DrawMenu() {
-  const { transactionValue, yearValue, dataSetCode,  
+  const { transactionValue, yearValue, dataSetCode,
+    parentMenuSelection, childMenuSelection,  
     setCode, setDimensions, setColorscheme, 
-    setOpacity, setDataSetCode, setData} = useDataSetContext()
+    setOpacity, setDataSetCode, setData,
+    setParentMenuSelection, setChildMenuSelection} = useDataSetContext()
 
   const menuWindowRef = useRef<HTMLDivElement>(null)
   const [menuWidth, setMenuWidth] = useState<"0px" | "-400px">("0px")
-  const [activeSelection, setActiveSelection] = useState<number>(0)
-  const [activeSelectionTwo, setActiveSelectionTwo] = useState<string>("")
+
+
   const [mainIndexCollection, setMainIndexCollection] = useState<MainIndexCollection>([])
 
   /**
@@ -76,20 +78,17 @@ function DrawMenu() {
 
   useEffect(() => {
     getIndexData()
-  }, [getIndexData])
-
-  useEffect(() => {
     getDatasetData()
-  }, [getDatasetData])
+  }, [getDatasetData, getIndexData])
 
   function toggleOptionWindowParent(id:number, htmlElementId: string, htmlParentClass:string) {
-    setActiveSelection(id)
-    setActiveSelectionTwo("")
+    setParentMenuSelection(id)
+    setChildMenuSelection("")
     toggleRadioInputWindow(htmlElementId,htmlParentClass)
   }
 
   function toggleOptionWindowChild(htmlElementId: string, htmlParentClass:string) {
-    setActiveSelectionTwo(htmlElementId)
+    setChildMenuSelection(htmlElementId)
     setDataSetCode(htmlElementId)
     toggleRadioInputWindow(htmlElementId,htmlParentClass)
   }
@@ -112,7 +111,7 @@ function DrawMenu() {
           <p>{el.code}</p>
         </div>
         <div>
-          {activeSelectionTwo === String(el.code) &&
+          {childMenuSelection === String(el.code) &&
             <MenuSelectDimensionsComponent/>
           }
         </div>
@@ -125,7 +124,7 @@ function DrawMenu() {
         <div ref={menuWindowRef} className='selection_menu' style={{left:menuWidth}}>
             <button onClick={toggleMenuWindow} className="selection_menu_button flex-c">O</button>
             <div className="selection_menu_section">
-              <div className="selection_menu_logobox flex-c">
+              <div className="selection_menu_logobox">
                 <h2>Default text</h2>
                 <div></div>
               </div>
@@ -134,8 +133,10 @@ function DrawMenu() {
                   <div key={Number(element.code)} className="selection_menu_options_child">
                     {mainChoiceComponent(element)}
                     <div className="selection_box" id={String(element.code)}>
-                      {activeSelection === Number(element.code) && 
+                      {parentMenuSelection === Number(element.code) && 
+                      
                         <div>
+
                           {element.datasets.map(el => 
                             secondaryChoiceComponent(el, element)
                           )}

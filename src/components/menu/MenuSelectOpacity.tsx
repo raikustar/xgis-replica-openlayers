@@ -24,7 +24,9 @@ function MenuSelectOpacity() {
             min={0}
             max={1}
             step={0.01}
-            sx={{width:"250px"}}
+            sx={{width:"250px",
+              color:"black"
+            }}
         >
         </Slider>
     </>

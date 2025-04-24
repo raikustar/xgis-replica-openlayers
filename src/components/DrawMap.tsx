@@ -22,7 +22,7 @@ import { useDataSetContext } from '../store/DataContext'
  * @returns A parent div element. Which holds a child div element that contains the entire map that is visually drawn.
  */
 function DrawMap() {
-  const {colorscheme, data, opacity} = useDataSetContext()
+  const {colorscheme, data, opacity, parentMenuSelection, childMenuSelection} = useDataSetContext()
 
   const elementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<Map>(null)
@@ -39,14 +39,14 @@ function DrawMap() {
     })
   }, [])
 
-  const addVectorLayer = useCallback(() => {
-    return addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity)
-  }, [regionFeatureCollection, colorscheme, opacity])
+  const addVectorLayer = useCallback(
+    () => addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity)
+  ,[regionFeatureCollection, colorscheme, opacity])
 
   const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
     
-    const viewLayer = addViewToOpenLayersMap(estoniaCenterCoord, 5, coordinateBounds)
+    const viewLayer = addViewToOpenLayersMap(estoniaCenterCoord, coordinateBounds)
     const tileLayer = getTileLayerToMap()
 
     mapRef.current = new Map({
@@ -76,14 +76,14 @@ function DrawMap() {
   },[getCountyData])
 
   useEffect(() => {
-    if (regionFeatureCollection.length >= 1) {
-      loadOpenLayersMap(regionFeatureCollection)
-    }
+    loadOpenLayersMap(regionFeatureCollection)
+    
     toggleVectorLayer(false)
-    if (data !== undefined) {
+    if (childMenuSelection !== "") {
       toggleVectorLayer(true)
     }
-  }, [loadOpenLayersMap, addVectorLayer, regionFeatureCollection, toggleVectorLayer, data])
+    
+  }, [getCountyData, loadOpenLayersMap, addVectorLayer, regionFeatureCollection, toggleVectorLayer, data, childMenuSelection])
 
   return (
     <div id="map_parent">

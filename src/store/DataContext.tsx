@@ -26,6 +26,11 @@ type DataContextType = {
   opacity: number,
   setOpacity: (opacity:number) => void
 
+  parentMenuSelection: number,
+  setParentMenuSelection: (parentMenuSelection: number) => void
+
+  childMenuSelection: string,
+  setChildMenuSelection: (childMenuSelection: string) => void
 }
 
 export const DataContext = createContext<DataContextType | undefined>(undefined)
