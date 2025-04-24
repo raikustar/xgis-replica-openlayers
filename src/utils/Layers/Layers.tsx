@@ -43,6 +43,7 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
             text:countyName,
             scale:1.2,
             fill: new Fill({ color: strokeColour}),
+            stroke: new Stroke({color:"rgb(255,255,255)", width: 3})
         })         
     }))
     return feature
@@ -67,6 +68,8 @@ export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0
             text:countyName,
             scale:1.2,
             fill: new Fill({ color: strokeColour}),
+            stroke: new Stroke({color:"rgb(255,255,255)", width: 3})
+
         })          
     }))
     return feature
@@ -99,19 +102,18 @@ export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:n
  */
 export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.7, data:LabelSpecifier): VectorLayer {
     const vectorSource = new VectorSource({})
-    geoData.forEach((county, i) => {
-        let feature;
-
-        const idx = i % 5
-        const colour:string = filterHexToRgb(colors, idx)
-
+    geoData.forEach(county => {
+        let feature;        
         const countyCode = county?.properties?.MKOOD
         const geometryType = county?.geometry?.type
         const coords = county?.geometry?.coordinates
-        const code = getCountyCode(data, countyCode)
+        const countyValue = getCountyValue(data, countyCode)
         const countyName = county?.properties?.MNIMI
-
-        const text:string = `${countyName} \n ${code}`
+        
+        const text:string = `${countyName} \n ${countyValue}`
+        
+        const colorIndex = filterColorIndex(data, countyValue, colors)
+        const colour:string = filterHexToRgb(colors, colorIndex)
 
         if (geometryType === "Polygon" && coords) {
             feature = getPolygonLayer(coords, colour, text)
@@ -135,7 +137,30 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
  * Checks if county code has a specific key and returns that key string.
  *  
  * If not returns an empty string.
+ * @returns A string.
+ */ 
+function getCountyValue(data:LabelSpecifier, countyCode:string):string {    
+    const code = data[countyCode]
+    if (code) return String(code) 
+    else return ""
+    
+}
+
+
+/**
+ * Data Binning to choose a color value based on where the countyValue lands.
+ * 
+ * @returns A number that is used as an index to select the color value.
  */
-function getCountyCode(data:LabelSpecifier, countyCode:string) {    
-    return data[countyCode] ?? ""
+function filterColorIndex(data:LabelSpecifier, countyValue:string, colors:string[]):number {
+    const value = Number(countyValue)
+    const arr = Object.values(data).sort((a,b) => b-a)
+    const colorLength = colors.length
+    
+    const quantileSize = Math.floor(arr.length / colorLength)
+    for (let i = 0; i<colorLength;i++) {
+        const threshold = i * quantileSize
+        if (value >= arr[threshold]) return i 
+    }
+    return colorLength-1
 }

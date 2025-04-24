@@ -13,8 +13,7 @@ import { toggleRadioInputWindow } from "../utils/menu/Menu"
 function DrawMenu() {
   const { transactionValue, yearValue, dataSetCode,
     parentMenuSelection, childMenuSelection,  
-    setCode, setDimensions, setColorscheme, 
-    setOpacity, setDataSetCode, setData,
+    setCode, setDimensions, setColorscheme, setDataSetCode, setData,
     setParentMenuSelection, setChildMenuSelection} = useDataSetContext()
 
   const menuWindowRef = useRef<HTMLDivElement>(null)
