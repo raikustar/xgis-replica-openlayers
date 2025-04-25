@@ -7,5 +7,5 @@ Trying to recreate XGIS functionality. Or at the very least some of it.
 
 3. npm install
 
-4. npm run dev (use Window CLI git bash no worky)
+4. npm run dev (use Windows CLI, Git Bash a bit wonky)
 
