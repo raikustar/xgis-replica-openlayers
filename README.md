@@ -1,5 +1,7 @@
 Trying to recreate XGIS functionality. Or at the very least some of it.
 
+Gives a visual map of certain data in each of the counties in Estonia.
+
 
 1. git clone https://github.com/raikustar/xgis-replica-openlayers
 
