@@ -11,10 +11,20 @@ import { toggleRadioInputWindow } from "../utils/menu/Menu"
  * @returns Functional react component
  */
 function DrawMenu() {
-  const { transactionValue, yearValue, dataSetCode,
-    parentMenuSelection, childMenuSelection,  
-    setCode, setDimensions, setColorscheme, setDataSetCode, setData,
-    setParentMenuSelection, setChildMenuSelection} = useDataSetContext()
+  const { 
+	transactionValue, 
+	yearValue, 
+	dataSetCode,
+    	parentMenuSelection, 
+	childMenuSelection,  
+    	setCode, 
+	setDimensions, 
+	setColorscheme, 
+	setDataSetCode, 
+	setData,
+    	setParentMenuSelection, 
+	setChildMenuSelection
+	} = useDataSetContext()
 
   const menuWindowRef = useRef<HTMLDivElement>(null)
   const [menuWidth, setMenuWidth] = useState<"0px" | "-400px">("0px")

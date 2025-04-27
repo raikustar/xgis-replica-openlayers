@@ -39,9 +39,9 @@ function DrawMap() {
     })
   }, [])
 
-  const addVectorLayer = useCallback(
-    () => addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity, data)
-  ,[regionFeatureCollection, colorscheme, opacity, data])
+  const addVectorLayer = useCallback(() => {
+	return addVectorLayerToOpenLayersMap(regionFeatureCollection, colorscheme, opacity, data)
+} ,[regionFeatureCollection, colorscheme, opacity, data])
 
   const loadOpenLayersMap = useCallback((data: GeoJSONCollection) => {
     if (!elementRef.current || mapRef.current || data.length === 0) return;
