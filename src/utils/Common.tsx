@@ -42,7 +42,6 @@ export function filterHexToRgb(colors:string[], index: number = 0): string {
     const g = (bigint >> 8) & 255
     // Least significant bit is masked with bitwise AND 255
     const b = bigint & 255
-    console.log(r, g, b)
     return `rgb(${r}, ${g}, ${b})`
   } 
   return "rgb(0,0,0,0)"
