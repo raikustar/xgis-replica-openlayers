@@ -192,10 +192,38 @@
 }
 
 .selection_menu_databox {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   bottom: 0px;
   width: var(--var-width);
   height: 120px;
   border-top: 1px solid black;
-  color: green;
+  color: black;
+}
+
+.selection_menu_databox_datadiv {
+  width: var(--var-width);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  font-size: 12px;
+  height: 40px;
+  gap: 0px;
+}
+
+.selection_menu_databox_datadiv p {
+  text-align: start;
+  margin: 0;
+  display: block;
+  width: var(--var-width);
+}
+
+.selection_menu_databox_datadiv a {
+  text-align: start;
+  margin: 0;
+  display: block;
+  width: var(--var-width);
 }
