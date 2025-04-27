@@ -15,6 +15,7 @@ import { LabelSpecifier } from '../menu/MenuTypes'
 /**
  * Creates a new TileLayer class with a source from the OSM class.
  * Draws the base visual map. 
+ * 
  * @returns TileLayer class.
  */
 export function getTileLayerToMap(): TileLayer {
@@ -25,6 +26,7 @@ export function getTileLayerToMap(): TileLayer {
 }
 
 /**
+ * Creates a new Feature class containing a Polygon shape.
  * 
  * @param coordinates - Polygon input coordinates. Used to draw the shape inside of the Feature class.
  * @param fillColour - Inner shape colour. Default is 'rgb(255,0,0, 0.2)'.
@@ -50,6 +52,7 @@ export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,
 }
 
 /**
+ * Creates a new Feature class containing a MultiPolygon shape.
  * 
  * @param coordinates - MultiPolygon input coordinates. Used to draw the shape inside of the Feature class.
  * @param fillColour - Inner shape colour. Default is 'rgb(255,0,0, 0.2)'.
@@ -76,6 +79,8 @@ export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0
 }
 
 /**
+ * Creates a View class.
+ * 
  * The View class is added to the base Map class. Used to keep the user inside of a specific view range.
  * 
  * @param centerCoords - Array coordinates of the center of Estonia. Required input.
@@ -84,6 +89,14 @@ export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0
  */
 export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:number[]): View {
     const zoomValue:number = 5
+
+    if (!Array.isArray(centerCoords) || centerCoords.length !== 2) {
+        throw new Error("Incorrect center coordinates.")
+    }
+    if (!Array.isArray(coordinateBounds) || coordinateBounds.length !== 4) {
+        throw new Error("Incorrect coordinate bounds.")
+    }
+
     const view = new View({
         center: fromLonLat(centerCoords),
         zoom: zoomValue,
@@ -135,8 +148,10 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
 
 /**
  * Checks if county code has a specific key and returns that key string.
- *  
  * If not returns an empty string.
+ * 
+ * @param data - Label specifier data type.
+ * @param countyCode - The county code as a string.
  * @returns A string.
  */ 
 function getCountyValue(data:LabelSpecifier, countyCode:string):string {    
@@ -150,6 +165,9 @@ function getCountyValue(data:LabelSpecifier, countyCode:string):string {
 /**
  * Data Binning to choose a color value based on where the countyValue lands.
  * 
+ * @param data - Label specifier data type.
+ * @param countyCode - The county code as a string.
+ * @param colors - Array of colors.
  * @returns A number that is used as an index to select the color value.
  */
 function filterColorIndex(data:LabelSpecifier, countyValue:string, colors:string[]):number {
