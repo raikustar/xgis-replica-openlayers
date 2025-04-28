@@ -3,6 +3,7 @@ import { DataSet, MainIndex, MainIndexCollection } from "../utils/menu/MenuTypes
 import { useDataSetContext } from "../store/DataContext"
 import MenuSelectDimensionsComponent from "./menu/MenuSelectDimensionsComponent"
 import { toggleRadioInputWindow } from "../utils/menu/Menu"
+import MenuDataBox from "./menu/MenuDataBox"
 
 
 /**
@@ -155,18 +156,7 @@ function DrawMenu() {
                 )}
               </div>
             <div className="selection_menu_databox">
-              <div className="selection_menu_databox_datadiv">
-                <p>Trying to recreate XGIS website - </p>
-                <a href="https://xgis.maaamet.ee/xgis2/page/app/statistika" target="_blank">XGIS Maaamet Website</a>
-              </div>
-              <div className="selection_menu_databox_datadiv">
-                <p>County data gathered from Maaamet - </p>
-                <a href="https://geoportaal.maaamet.ee/eng/spatial-data/administrative-and-settlement-division-p312.html" target="_blank">Maaamet County Data Source</a>
-              </div>
-              <div className="selection_menu_databox_datadiv">
-              <p>Geojson data gathered from Maaamet - </p>
-                <a href="https://www.maaamet.ee/kinnisvara/htraru/Start.aspx" target="_blank">Maaamet Data for GeoJSON files</a>
-              </div>
+              <MenuDataBox />
             </div>
           </div>
       </div>

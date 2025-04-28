@@ -33,10 +33,10 @@ export function getTileLayerToMap(): TileLayer {
  * @param countyName - Name of the county. Default is an empty string.
  * @returns The Feature class that contains all coordinates and colours of a Polygon shape. Used to add to a VectorSource.
  */
-export function getPolygonLayer(coordinates:any, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
+export function getPolygonLayer(polygonCoordinates:any, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
     const strokeColour:string = "rgb(0,0,0)"
     const feature = new Feature({
-        geometry: new Polygon(coordinates),
+        geometry: new Polygon(polygonCoordinates),
     })
     feature.setStyle(new Style({
         fill: new Fill({ color: fillColour}),
@@ -116,17 +116,17 @@ export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:n
 export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:string[], defaultOpacity: number = 0.7, data:LabelSpecifier): VectorLayer {
     const vectorSource = new VectorSource({})
     geoData.forEach(county => {
-        let feature;        
         const countyCode = county?.properties?.MKOOD
         const geometryType = county?.geometry?.type
-        const coords = county?.geometry?.coordinates
+        const coords: number[] | number[][] | number[][][] = county?.geometry?.coordinates
+
         const countyValue = getCountyValue(data, countyCode)
         const countyName = county?.properties?.MNIMI
-        
         const text:string = `${countyName} \n ${countyValue}`
-        
         const colorIndex = filterColorIndex(data, countyValue, colors)
         const colour:string = filterHexToRgb(colors, colorIndex)
+
+        let feature; 
 
         if (geometryType === "Polygon" && coords) {
             feature = getPolygonLayer(coords, colour, text)
@@ -144,7 +144,6 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
     vectorLayer.setSource(vectorSource)
     return vectorLayer
 }
-
 
 /**
  * Checks if county code has a specific key and returns that key string.
