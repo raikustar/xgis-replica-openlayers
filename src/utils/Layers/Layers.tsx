@@ -3,13 +3,68 @@ import { Style, Stroke, Fill, Text } from 'ol/style'
 import TileLayer from 'ol/layer/Tile'
 import { OSM } from 'ol/source'
 import { Feature, View, } from "ol"
-import { GeoJSONCollection } from './LayersTypes'
+import { GeoJSONCollection, MultiPolygonCoordinate, PolygonCoordinate } from './LayersTypes'
 import VectorLayer from 'ol/layer/Vector'
 import { fromLonLat } from 'ol/proj'
 import VectorSource from 'ol/source/Vector'
 import { filterHexToRgb } from '../Common'
 import { LabelSpecifier } from '../menu/MenuTypes'
 
+/**
+ * Intended to use inside of an if-else code block to tell the following section of the code that the checked coordinate values are actually of the correct type.
+ * 
+ * @param coordinates - Nested Polygon array coordinates
+ * @returns a boolean value.
+ */
+function checkIsPolygonCoordinate(coordinates: unknown): coordinates is PolygonCoordinate {
+    return Array.isArray(coordinates) && coordinates.every(coord => Array.isArray(coord) && coord.every(c => Array.isArray(c) && c.length === 2))
+}
+
+/**
+ * Intended to use inside of an if-else code block to tell the following section of the code that the checked coordinate values are actually of the correct type.
+ * 
+ * @param coordinates - Nested MultiPolygon array coordinates
+ * @returns a boolean value.
+ */
+function checkIsMultiPolygonCoordinate(coordinates: unknown): coordinates is MultiPolygonCoordinate {
+    return Array.isArray(coordinates) && coordinates.every(coords => Array.isArray(coords) && coords.every(coord => Array.isArray(coord) && coord.every(c => Array.isArray(c) && c.length === 2)))
+}
+
+/**
+ * Checks if county code has a specific key and returns that key string.
+ * If not returns an empty string.
+ * 
+ * @param data - Label specifier data type.
+ * @param countyCode - The county code as a string.
+ * @returns A string.
+ */ 
+function getCountyValue(data:LabelSpecifier, countyCode:string):string {    
+    const code = data[countyCode]
+    if (code) return String(code) 
+    else return ""
+    
+}
+
+/**
+ * Data Binning to choose a color value based on where the countyValue lands.
+ * 
+ * @param data - Label specifier data type.
+ * @param countyCode - The county code as a string.
+ * @param colors - Array of colors.
+ * @returns A number that is used as an index to select the color value.
+ */
+function filterColorIndex(data:LabelSpecifier, countyValue:string, colors:string[]):number {
+    const value = Number(countyValue)
+    const arr = Object.values(data).sort((a,b) => b-a)
+    const colorLength = colors.length
+    
+    const quantileSize = Math.floor(arr.length / colorLength)
+    for (let i = 0; i<colorLength;i++) {
+        const threshold = i * quantileSize
+        if (value >= arr[threshold]) return i 
+    }
+    return colorLength-1
+}
 
 
 /**
@@ -33,7 +88,7 @@ export function getTileLayerToMap(): TileLayer {
  * @param countyName - Name of the county. Default is an empty string.
  * @returns The Feature class that contains all coordinates and colours of a Polygon shape. Used to add to a VectorSource.
  */
-export function getPolygonLayer(polygonCoordinates:any, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
+export function getPolygonLayer(polygonCoordinates:PolygonCoordinate, fillColour:string = "rgb(255,0,0)", countyName:string = ""):Feature {
     const strokeColour:string = "rgb(0,0,0)"
     const feature = new Feature({
         geometry: new Polygon(polygonCoordinates),
@@ -59,10 +114,10 @@ export function getPolygonLayer(polygonCoordinates:any, fillColour:string = "rgb
  * @param countyName - Name of the county. Default is an empty string.
  * @returns The Feature class that contains all coordinates and colours of a MultiPolygon shape. Used to add to a VectorSource.
  */
-export function getMultiPolygonLayer(coordinates:any, fillColour:string = "rgb(0,255,0)", countyName:string = ""):Feature {
+export function getMultiPolygonLayer(multiPolygonCoordinates:MultiPolygonCoordinate, fillColour:string = "rgb(0,255,0)", countyName:string = ""):Feature {
     const strokeColour:string = "rgb(0,0,0)"
     const feature = new Feature({
-        geometry: new MultiPolygon(coordinates)
+        geometry: new MultiPolygon(multiPolygonCoordinates)
     })
     feature.setStyle(new Style({
         fill: new Fill({ color: fillColour}),
@@ -118,8 +173,8 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
     geoData.forEach(county => {
         const countyCode = county?.properties?.MKOOD
         const geometryType = county?.geometry?.type
-        const coords: number[] | number[][] | number[][][] = county?.geometry?.coordinates
-
+        const coords = county?.geometry?.coordinates
+         
         const countyValue = getCountyValue(data, countyCode)
         const countyName = county?.properties?.MNIMI
         const text:string = `${countyName} \n ${countyValue}`
@@ -128,9 +183,9 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
 
         let feature; 
 
-        if (geometryType === "Polygon" && coords) {
+        if (geometryType === "Polygon" && coords && checkIsPolygonCoordinate(coords)) {
             feature = getPolygonLayer(coords, colour, text)
-        } else if (geometryType === "MultiPolygon" && coords) {
+        } else if (geometryType === "MultiPolygon" && coords && checkIsMultiPolygonCoordinate(coords)) {
             feature = getMultiPolygonLayer(coords, colour, text)
         }
 
@@ -143,41 +198,4 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
     })
     vectorLayer.setSource(vectorSource)
     return vectorLayer
-}
-
-/**
- * Checks if county code has a specific key and returns that key string.
- * If not returns an empty string.
- * 
- * @param data - Label specifier data type.
- * @param countyCode - The county code as a string.
- * @returns A string.
- */ 
-function getCountyValue(data:LabelSpecifier, countyCode:string):string {    
-    const code = data[countyCode]
-    if (code) return String(code) 
-    else return ""
-    
-}
-
-
-/**
- * Data Binning to choose a color value based on where the countyValue lands.
- * 
- * @param data - Label specifier data type.
- * @param countyCode - The county code as a string.
- * @param colors - Array of colors.
- * @returns A number that is used as an index to select the color value.
- */
-function filterColorIndex(data:LabelSpecifier, countyValue:string, colors:string[]):number {
-    const value = Number(countyValue)
-    const arr = Object.values(data).sort((a,b) => b-a)
-    const colorLength = colors.length
-    
-    const quantileSize = Math.floor(arr.length / colorLength)
-    for (let i = 0; i<colorLength;i++) {
-        const threshold = i * quantileSize
-        if (value >= arr[threshold]) return i 
-    }
-    return colorLength-1
 }

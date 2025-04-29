@@ -17,6 +17,10 @@ type MultiPolygonGeometry = {
 }
 type Geometry = PolygonGeometry | MultiPolygonGeometry
 
+type Coordinate = [number, number];
+export type PolygonCoordinate = Coordinate[][];
+export type MultiPolygonCoordinate = Coordinate[][][];
+
 export type GeoJSONCollection = GeoJSONType[]
 
 
