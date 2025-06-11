@@ -12,3 +12,8 @@ Tried to make a simplified clone of this website just to try and learn. https://
 
 4. npm run dev (use Windows CLI, Git Bash a bit wonky)
 
+
+Preview
+
+![alt text](https://raw.githubusercontent.com/raikustar/xgis-replica-openlayers/refs/heads/main/preview.png)
+
