@@ -157,7 +157,7 @@ export function addViewToOpenLayersMap(centerCoords:number[], coordinateBounds:n
         zoom: zoomValue,
         minZoom: zoomValue,
         extent: coordinateBounds,
-        padding:[0,0,0,0]
+        padding:[0,0,0,0],
     });
     return view
 }
@@ -179,8 +179,8 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
         const countyName = county?.properties?.MNIMI
         const text:string = `${countyName} \n ${countyValue}`
         const colorIndex = filterColorIndex(data, countyValue, colors)
-        const colour:string = filterHexToRgb(colors, colorIndex)
-
+        const colour:string = filterHexToRgb(colors, colorIndex, defaultOpacity)
+        
         let feature; 
 
         if (geometryType === "Polygon" && coords && checkIsPolygonCoordinate(coords)) {
@@ -194,8 +194,7 @@ export function addVectorLayerToOpenLayersMap(geoData:GeoJSONCollection, colors:
         }
     })  
     const vectorLayer = new VectorLayer({
-        opacity:defaultOpacity
+        source: vectorSource
     })
-    vectorLayer.setSource(vectorSource)
     return vectorLayer
 }

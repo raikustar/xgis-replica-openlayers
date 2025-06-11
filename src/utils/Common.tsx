@@ -25,11 +25,12 @@ export function getRandomColour(): string {
  * Takes hex colour and converts to a rgb colour.
  * 
  * @param colors - Array of hex colour strings.
- * @param index - Index to be used to retreive a string from the colors array.
+ * @param index - Index to be used to retreive a string from the colors array. Default = 0.
+ * @param opacity - The opacity value of a rgb colour. Default 0.7.
  * 
  * @returns A string. Format of "rgb(r,g,b)".
  */
-export function filterHexToRgb(colors:string[], index: number = 0): string {
+export function filterHexToRgb(colors:string[], index: number = 0, opacity: number = 0.7): string {
   if (colors.length >= 1) {
     const hexColour = colors[index]
     const bigint = parseInt(hexColour.slice(1), 16)
@@ -42,7 +43,7 @@ export function filterHexToRgb(colors:string[], index: number = 0): string {
     const g = (bigint >> 8) & 255
     // Least significant bit is masked with bitwise AND 255
     const b = bigint & 255
-    return `rgb(${r}, ${g}, ${b})`
+    return `rgb(${r}, ${g}, ${b}, ${opacity})`
   } 
   return "rgb(0,0,0,0)"
 }
